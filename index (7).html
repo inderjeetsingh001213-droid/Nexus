@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NexusSwap — Instant Crypto Exchange & Wallet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(251, 146, 60, 0.22), transparent 36%),
+        radial-gradient(circle at 88% 18%, rgba(253, 186, 116, 0.28), transparent 40%),
+        radial-gradient(circle at 50% 88%, rgba(249, 115, 22, 0.16), transparent 45%),
+        linear-gradient(180deg, #fffdf9 0%, #fff7ed 55%, #ffedd5 100%);
+      color: #111827;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Apple VisionOS / Liquid Transparent Crystal Glass Effect */
+    .glass-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), rgba(255, 247, 237, 0.16));
+      backdrop-filter: blur(16px) saturate(190%);
+      -webkit-backdrop-filter: blur(16px) saturate(190%);
+      border: 1px solid rgba(255, 255, 255, 0.72);
+      box-shadow:
+        0 20px 45px -12px rgba(234, 88, 12, 0.16),
+        inset 0 1.5px 1.5px rgba(255, 255, 255, 0.92),
+        inset 0 -1px 1px rgba(251, 146, 60, 0.22);
+    }
+    .glass-nav {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(18px) saturate(185%);
+      -webkit-backdrop-filter: blur(18px) saturate(185%);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow:
+        0 6px 24px rgba(234, 88, 12, 0.06),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+    }
+    .glass-pill-btn {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.78), rgba(234, 88, 12, 0.85));
+      backdrop-filter: blur(12px) saturate(170%);
+      -webkit-backdrop-filter: blur(12px) saturate(170%);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow:
+        0 10px 26px -6px rgba(234, 88, 12, 0.35),
+        inset 0 1.5px 1px rgba(255, 255, 255, 0.75);
+    }
+    .input-box {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(12px) saturate(175%);
+      -webkit-backdrop-filter: blur(12px) saturate(175%);
+      border: 1px solid rgba(255, 255, 255, 0.68);
+      box-shadow:
+        inset 0 1px 1px rgba(255, 255, 255, 0.85),
+        0 4px 12px rgba(234, 88, 12, 0.04);
+      transition: all 0.22s ease;
+    }
+    .input-box:focus-within {
+      background: rgba(255, 255, 255, 0.38);
+      border-color: rgba(249, 115, 22, 0.75);
+      box-shadow:
+        0 0 0 4px rgba(249, 115, 22, 0.14),
+        inset 0 1px 2px rgba(255, 255, 255, 0.95);
+    }
+    .glass-subitem {
+      background: rgba(255, 255, 255, 0.20);
+      backdrop-filter: blur(10px) saturate(170%);
+      -webkit-backdrop-filter: blur(10px) saturate(170%);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #ffedd5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #fb923c;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ea580c;
+    }
+
+    /* Crypto Floating Background Animation */
+    .crypto-bg-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .crypto-orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(70px);
+      opacity: 0.35;
+      animation: orbDrift 18s ease-in-out infinite alternate;
+    }
+    @keyframes orbDrift {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, -25px) scale(1.08); }
+      100% { transform: translate(-25px, 30px) scale(0.95); }
+    }
+    .crypto-coin-float {
+      position: absolute;
+      bottom: -140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.96), rgba(255, 247, 237, 0.72) 55%, rgba(251, 146, 60, 0.32) 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.88);
+      box-shadow:
+        0 18px 36px -10px rgba(234, 88, 12, 0.18),
+        inset 0 0 0 2px rgba(249, 115, 22, 0.18),
+        inset 0 2px 4px rgba(255, 255, 255, 0.95);
+      color: #c2410c;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      user-select: none;
+      backdrop-filter: blur(4px);
+      animation: floatUpCrypto linear infinite;
+    }
+    .crypto-coin-symbol {
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .crypto-coin-ticker {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(154, 52, 18, 0.72);
+      margin-top: 2px;
+    }
+    @keyframes floatUpCrypto {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(0.9);
+        opacity: 0;
+      }
+      12% {
+        opacity: 0.82;
+      }
+      85% {
+        opacity: 0.75;
+      }
+      100% {
+        transform: translateY(-115vh) rotate(360deg) scale(1.05);
+        opacity: 0;
+      }
+    }
+
+    select {
+      color-scheme: light;
+      background-color: rgba(255, 250, 245, 0.92);
+      color: #111827;
+      border: 1px solid #fdba74;
+    }
+    select option {
+      background-color: #fffaf5;
+      color: #111827;
+      padding: 10px;
+    }
+    select option:checked {
+      background-color: #ffedd5;
+      color: #c2410c;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-orange-500/20 relative">
+
+  <!-- ANIMATED CRYPTOCURRENCY BACKGROUND LAYER -->
+  <div class="crypto-bg-layer" aria-hidden="true">
+    <!-- Soft Orange/Amber Ambient Glow Orbs -->
+    <div class="crypto-orb" style="width: 340px; height: 340px; background: #fdba74; top: 8%; left: 5%; animation-duration: 16s;"></div>
+    <div class="crypto-orb" style="width: 380px; height: 380px; background: #fed7aa; bottom: 10%; right: 6%; animation-duration: 21s; animation-delay: -5s;"></div>
+
+    <!-- Larger Professional Crypto Medallions -->
+    <div class="crypto-coin-float" style="left: 6%; width: 84px; height: 84px; animation-duration: 22s; animation-delay: 0s;">
+      <span class="crypto-coin-symbol" style="font-size: 30px;">₿</span>
+      <span class="crypto-coin-ticker">BTC</span>
+    </div>
+    <div class="crypto-coin-float" style="left: 20%; width: 72px; height: 72px; animation-duration: 26s; animation-delay: -7s;">
+      <span class="crypto-coin-symbol" style="font-size: 25px;">Ξ</span>
+      <span class="crypto-coin-ticker">ETH</span>
+    </div>
+    <div class="crypto-coin-float" style="left: 36%; width: 78px; height: 78px; animation-duration: 20s; animation-delay: -12s;">
+      <span class="crypto-coin-symbol" style="font-size: 26px;">₮</span>
+      <span class="crypto-coin-ticker">USDT</span>
+    </div>
+    <div class="crypto-coin-float" style="left: 52%; width: 70px; height: 70px; animation-duration: 28s; animation-delay: -4s;">
+      <span class="crypto-coin-symbol" style="font-size: 18px;">BNB</span>
+      <span class="crypto-coin-ticker">CHAIN</span>
+    </div>
+    <div class="crypto-coin-float" style="left: 68%; width: 90px; height: 90px; animation-duration: 24s; animation-delay: -10s;">
+      <span class="crypto-coin-symbol" style="font-size: 32px;">₿</span>
+      <span class="crypto-coin-ticker">BTC</span>
+    </div>
+    <div class="crypto-coin-float" style="left: 84%; width: 76px; height: 76px; animation-duration: 23s; animation-delay: -15s;">
+      <span class="crypto-coin-symbol" style="font-size: 25px;">Ξ</span>
+      <span class="crypto-coin-ticker">ETH</span>
+    </div>
+  </div>
+
+
+  <!-- Top Navigation -->
+  <header class="sticky top-0 z-30 glass-nav">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <!-- Secret Admin Trigger on Logo (5 rapid clicks) -->
+      <div id="brandLogo" class="flex items-center gap-2.5 cursor-pointer select-none group" title="NexusSwap">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/25 group-active:scale-95 transition">
+          <i data-lucide="arrow-left-right" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg tracking-tight text-gray-900">Nexus<span class="text-orange-600">Swap</span></span>
+        </div>
+      </div>
+
+      <!-- Right Action Buttons -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-orange-50 border border-orange-200 text-xs text-orange-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Live Rates</span>
+        </div>
+
+        <button onclick="openDepositModal()" class="flex items-center gap-2 px-4 py-2 rounded-xl glass-pill-btn hover:brightness-105 active:scale-95 text-white font-medium text-sm transition">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Deposit</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Left Column: Wallet Balances & Recent Activity -->
+      <div class="lg:col-span-5 space-y-6">
+        <!-- Portfolio Card -->
+        <div class="glass-card rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="text-xs uppercase tracking-wider text-gray-500 font-medium">Available Balance</p>
+              <h2 id="totalPortfolioUsd" class="text-2xl sm:text-3xl font-bold text-gray-900 mt-0.5">$0.00</h2>
+            </div>
+            <button onclick="openDepositModal()" class="text-xs font-medium text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 px-3 py-1.5 rounded-lg transition">
+              + Add Funds
+            </button>
+          </div>
+
+          <div id="assetList" class="space-y-2.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Recent Transactions Card -->
+        <div class="glass-card rounded-2xl p-5 shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+              <i data-lucide="history" class="w-4 h-4 text-orange-600"></i>
+              Recent Activity
+            </h3>
+            <span id="txCountBadge" class="text-xs text-gray-500 bg-orange-50 px-2 py-0.5 rounded-md">0</span>
+          </div>
+
+          <div id="txHistoryList" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Swap & Withdrawal Card -->
+      <div class="lg:col-span-7">
+        <div class="glass-card rounded-2xl p-5 sm:p-6 shadow-2xl">
+          <!-- Mode Tabs -->
+          <div class="grid grid-cols-3 gap-1.5 sm:gap-2 p-1 rounded-xl bg-white/25 backdrop-blur-md border border-white/60 mb-6">
+            <button id="tabSwapBtn" onclick="switchMainTab('swap')" class="py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-orange-600 text-white shadow">
+              <i data-lucide="repeat" class="w-4 h-4"></i>
+              <span>Swap</span>
+            </button>
+            <button id="tabTradeBtn" onclick="switchMainTab('trade')" class="py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-gray-600 hover:text-gray-900">
+              <i data-lucide="candlestick-chart" class="w-4 h-4"></i>
+              <span>Trading</span>
+            </button>
+            <button id="tabWithdrawBtn" onclick="switchMainTab('withdraw')" class="py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-gray-600 hover:text-gray-900">
+              <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+              <span>Withdraw</span>
+            </button>
+          </div>
+
+          <!-- SWAP PANEL -->
+          <div id="swapSection" class="space-y-4">
+            <!-- From Box -->
+            <div class="input-box rounded-xl p-4">
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span>You Pay</span>
+                <span>Balance: <button type="button" onclick="setMaxSwap()" id="swapFromBalance" class="text-orange-600 hover:underline font-mono">0.00</button></span>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <input id="swapFromAmount" type="number" step="any" min="0" placeholder="0.00" oninput="calculateSwapOutput()" class="w-full bg-transparent text-2xl font-semibold text-gray-900 outline-none font-mono" />
+                <select id="swapFromCoin" onchange="onSwapCoinChange()" class="bg-[#fffaf5]/95 border border-orange-300 text-gray-900 font-semibold text-sm rounded-xl px-3 py-2.5 outline-none cursor-pointer shadow-sm">
+                  <option value="ETH" selected>ETH</option>
+                  <option value="USDT">USDT</option>
+                  <option value="BTC">BTC</option>
+                  <option value="BNB">BNB</option>
+                </select>
+              </div>
+              <div id="swapFromUsdHint" class="text-xs text-gray-500 mt-1.5 font-mono">≈ $0.00</div>
+            </div>
+
+            <!-- Reverse Button -->
+            <div class="flex justify-center -my-2 relative z-10">
+              <button type="button" onclick="reverseSwapCoins()" class="w-10 h-10 rounded-xl bg-orange-100 hover:bg-orange-600 border border-orange-200 flex items-center justify-center text-gray-700 hover:text-gray-900 transition shadow-lg">
+                <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+            <!-- To Box -->
+            <div class="input-box rounded-xl p-4">
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span>You Receive (Estimated)</span>
+                <span>Balance: <span id="swapToBalance" class="font-mono text-gray-700">0.00</span></span>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <input id="swapToAmount" type="text" readonly placeholder="0.00" class="w-full bg-transparent text-2xl font-semibold text-emerald-600 outline-none font-mono" />
+                <select id="swapToCoin" onchange="calculateSwapOutput()" class="bg-[#fffaf5]/95 border border-orange-300 text-gray-900 font-semibold text-sm rounded-xl px-3 py-2.5 outline-none cursor-pointer shadow-sm">
+                  <option value="ETH" selected>ETH</option>
+                  <option value="USDT">USDT</option>
+                  <option value="BTC">BTC</option>
+                  <option value="BNB">BNB</option>
+                </select>
+              </div>
+              <div id="swapToUsdHint" class="text-xs text-gray-500 mt-1.5 font-mono">≈ $0.00</div>
+            </div>
+
+            <!-- Rate Info -->
+            <div class="p-3 rounded-xl bg-white/20 backdrop-blur-md border border-white/60 flex items-center justify-between text-xs text-gray-600">
+              <span>Exchange Rate</span>
+              <span id="swapRateDisplay" class="font-mono text-gray-800">1 ETH = 3,200.00 USDT</span>
+            </div>
+
+            <button type="button" onclick="executeSwap()" class="w-full py-3.5 rounded-xl glass-pill-btn hover:brightness-105 active:scale-[0.99] text-white font-semibold text-sm transition">
+              Swap Now
+            </button>
+          </div>
+
+          <!-- TRADING PANEL -->
+          <div id="tradeSection" class="hidden space-y-4">
+            <!-- Pair & Live Price Header -->
+            <div class="glass-subitem rounded-xl p-3.5 flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <select id="tradePairSelect" onchange="onTradePairChange()" class="bg-[#fffaf5]/95 border border-orange-300 text-gray-900 font-bold text-sm rounded-xl px-3 py-2 outline-none cursor-pointer shadow-sm">
+                  <option value="BTC" selected>BTC / USDT</option>
+                  <option value="ETH">ETH / USDT</option>
+                  <option value="BNB">BNB / USDT</option>
+                </select>
+                <div>
+                  <div id="tradeLivePrice" class="text-base sm:text-lg font-bold font-mono text-gray-900">$92,000.00</div>
+                  <div id="tradePriceChange" class="text-[11px] font-semibold text-emerald-600 font-mono">+2.84% (24h)</div>
+                </div>
+              </div>
+
+              <!-- Timeframe Pills -->
+              <div class="flex items-center gap-1 bg-white/35 p-1 rounded-lg border border-white/70">
+                <button type="button" onclick="setTradeTimeframe('1H')" data-tf="1H" class="trade-tf-btn px-2 py-1 rounded text-[11px] font-mono font-semibold text-gray-600 hover:text-gray-900">1H</button>
+                <button type="button" onclick="setTradeTimeframe('1D')" data-tf="1D" class="trade-tf-btn px-2 py-1 rounded text-[11px] font-mono font-semibold bg-orange-600 text-white">1D</button>
+                <button type="button" onclick="setTradeTimeframe('1W')" data-tf="1W" class="trade-tf-btn px-2 py-1 rounded text-[11px] font-mono font-semibold text-gray-600 hover:text-gray-900">1W</button>
+                <button type="button" onclick="setTradeTimeframe('1M')" data-tf="1M" class="trade-tf-btn px-2 py-1 rounded text-[11px] font-mono font-semibold text-gray-600 hover:text-gray-900">1M</button>
+              </div>
+            </div>
+
+            <!-- Interactive SVG Price Chart -->
+            <div class="glass-subitem rounded-xl p-3">
+              <div class="flex items-center justify-between text-[11px] text-gray-500 mb-1.5 font-mono">
+                <span id="tradeChartTitle">BTC/USDT Spot Trend</span>
+                <span id="tradeHighLow">H: $93,450 • L: $89,900</span>
+              </div>
+              <div class="w-full h-40">
+                <svg id="tradeChartSvg" viewBox="0 0 500 160" class="w-full h-full overflow-visible">
+                  <defs>
+                    <linearGradient id="tradeAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#ea580c" stop-opacity="0.32" />
+                      <stop offset="100%" stop-color="#ea580c" stop-opacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                  <path id="tradeAreaPath" d="" fill="url(#tradeAreaGrad)" />
+                  <path id="tradeLinePath" d="" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Buy / Sell Switch -->
+            <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-white/25 border border-white/60">
+              <button type="button" id="tradeBuyModeBtn" onclick="setTradeSide('BUY')" class="py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow transition">
+                Buy <span class="trade-base-label">BTC</span>
+              </button>
+              <button type="button" id="tradeSellModeBtn" onclick="setTradeSide('SELL')" class="py-2 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition">
+                Sell <span class="trade-base-label">BTC</span>
+              </button>
+            </div>
+
+            <!-- Order Input Box -->
+            <div class="input-box rounded-xl p-4 space-y-2.5">
+              <div class="flex items-center justify-between text-xs text-gray-500">
+                <span id="tradeInputLabel">Spend Amount (USDT)</span>
+                <span>Available: <button type="button" onclick="setMaxTrade()" id="tradeAvailBalance" class="text-orange-600 hover:underline font-mono">0.00 USDT</button></span>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <input id="tradeAmountInput" type="number" step="any" min="0" placeholder="0.00" oninput="updateTradeEstimate()" class="w-full bg-transparent text-2xl font-semibold text-gray-900 outline-none font-mono" />
+                <span id="tradeInputUnit" class="text-xs font-bold text-orange-700 bg-white/60 border border-white/80 px-3 py-1.5 rounded-xl">USDT</span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-gray-600 pt-1 border-t border-white/40 font-mono">
+                <span id="tradeEstLabel">Estimated Receive:</span>
+                <span id="tradeEstOutput" class="font-semibold text-gray-900">0.0000 BTC</span>
+              </div>
+            </div>
+
+            <button type="button" id="tradeSubmitBtn" onclick="executeTradeOrder()" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-sm transition shadow-lg shadow-emerald-600/25">
+              Place Buy Order
+            </button>
+          </div>
+
+
+          <!-- WITHDRAWAL PANEL -->
+          <div id="withdrawSection" class="hidden space-y-4">
+            <div class="p-3.5 rounded-xl bg-orange-50 border border-orange-200 flex items-start gap-2.5 text-xs text-orange-900">
+              <i data-lucide="shield-check" class="w-4 h-4 text-orange-600 shrink-0 mt-0.5"></i>
+              <span>All withdrawals undergo security verification and manual admin approval before on-chain dispatch.</span>
+            </div>
+
+            <!-- Select Coin -->
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1.5">Select Asset</label>
+              <div class="grid grid-cols-4 gap-2" id="withdrawCoinGrid">
+                <button type="button" onclick="selectWithdrawCoin('USDT')" data-wcoin="USDT" class="w-coin-btn py-2.5 rounded-xl border border-orange-500 bg-orange-100 text-gray-900 font-semibold text-xs transition">USDT</button>
+                <button type="button" onclick="selectWithdrawCoin('ETH')" data-wcoin="ETH" class="w-coin-btn py-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-gray-500 hover:text-gray-900 font-semibold text-xs transition">ETH</button>
+                <button type="button" onclick="selectWithdrawCoin('BTC')" data-wcoin="BTC" class="w-coin-btn py-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-gray-500 hover:text-gray-900 font-semibold text-xs transition">BTC</button>
+                <button type="button" onclick="selectWithdrawCoin('BNB')" data-wcoin="BNB" class="w-coin-btn py-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-gray-500 hover:text-gray-900 font-semibold text-xs transition">BNB</button>
+              </div>
+            </div>
+
+            <!-- Network Selection -->
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1.5">Network</label>
+              <select id="withdrawNetwork" class="w-full input-box rounded-xl px-3.5 py-2.5 text-sm text-gray-900 outline-none">
+                <option value="TRON (TRC20)">TRON (TRC20)</option>
+                <option value="Ethereum (ERC20)">Ethereum (ERC20)</option>
+                <option value="BNB Smart Chain (BEP20)">BNB Smart Chain (BEP20)</option>
+                <option value="Bitcoin Network">Bitcoin Network</option>
+              </select>
+            </div>
+
+            <!-- Destination Address -->
+            <div>
+              <label class="block text-xs font-medium text-gray-500 mb-1.5">Destination Wallet Address</label>
+              <div class="input-box rounded-xl px-3.5 py-2.5 flex items-center gap-2">
+                <input id="withdrawAddress" type="text" placeholder="Paste recipient wallet address..." class="w-full bg-transparent text-sm text-gray-900 font-mono outline-none" />
+              </div>
+            </div>
+
+            <!-- Amount -->
+            <div>
+              <div class="flex items-center justify-between text-xs text-gray-500 mb-1.5">
+                <span>Withdrawal Amount</span>
+              </div>
+              <div class="input-box rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2">
+                <input id="withdrawAmount" type="number" step="any" min="0" placeholder="0.00" class="w-full bg-transparent text-lg font-semibold text-gray-900 font-mono outline-none" />
+
+              </div>
+            </div>
+
+            <button type="button" onclick="submitWithdrawal()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 active:scale-[0.99] text-white font-semibold text-sm transition shadow-lg shadow-emerald-600/20">
+              Request Withdrawal
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- DEPOSIT STEP 1: COIN & AMOUNT MODAL -->
+  <div id="depositModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl p-5 sm:p-6 shadow-2xl border border-orange-200 relative max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+          <i data-lucide="arrow-down-left" class="w-5 h-5 text-orange-600"></i>
+          Deposit Crypto
+        </h3>
+        <button onclick="closeDepositModal()" class="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-gray-500 hover:text-gray-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Step 1: Deposit Coin/Network Selector -->
+      <label class="block text-xs font-medium text-gray-500 mb-2">1. Select Coin & Network</label>
+      <div class="grid grid-cols-2 gap-2 mb-4" id="depositNetworkOptions">
+        <button type="button" onclick="selectDepositOption('USDT_TRC20')" data-dep="USDT_TRC20" class="dep-opt-btn p-2.5 rounded-xl border border-orange-500 bg-orange-100 text-left transition">
+          <div class="text-xs font-bold text-gray-900">USDT</div>
+          <div class="text-[11px] text-orange-700">TRON (TRC20)</div>
+        </button>
+        <button type="button" onclick="selectDepositOption('USDT_ERC20')" data-dep="USDT_ERC20" class="dep-opt-btn p-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-left transition">
+          <div class="text-xs font-bold text-gray-900">USDT</div>
+          <div class="text-[11px] text-gray-500">Ethereum (ERC20)</div>
+        </button>
+        <button type="button" onclick="selectDepositOption('BTC')" data-dep="BTC" class="dep-opt-btn p-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-left transition">
+          <div class="text-xs font-bold text-gray-900">BTC</div>
+          <div class="text-[11px] text-gray-500">Bitcoin Network</div>
+        </button>
+        <button type="button" onclick="selectDepositOption('ETH')" data-dep="ETH" class="dep-opt-btn p-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-left transition">
+          <div class="text-xs font-bold text-gray-900">ETH</div>
+          <div class="text-[11px] text-gray-500">Ethereum (ERC20)</div>
+        </button>
+      </div>
+
+      <!-- Step 2: Amount Box -->
+      <label class="block text-xs font-medium text-gray-500 mb-1.5">2. Enter Deposit Amount</label>
+      <div class="input-box rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-2 mb-2">
+        <input id="depositAmountInput" type="number" step="any" min="0" placeholder="0.00" onkeydown="if(event.key==='Enter') proceedToAddressWindow()" class="w-full bg-transparent text-lg font-semibold text-gray-900 font-mono outline-none" />
+        <span id="depositCoinTag" class="text-xs font-bold text-orange-600 bg-orange-100 px-2.5 py-1 rounded-lg">USDT</span>
+      </div>
+      <div class="flex gap-2 mb-5">
+        <button type="button" onclick="setQuickDeposit(100)" class="flex-1 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-xs font-mono text-gray-700">100</button>
+        <button type="button" onclick="setQuickDeposit(500)" class="flex-1 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-xs font-mono text-gray-700">500</button>
+        <button type="button" onclick="setQuickDeposit(1000)" class="flex-1 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-xs font-mono text-gray-700">1,000</button>
+        <button type="button" onclick="setQuickDeposit(1)" class="flex-1 py-1 rounded-lg bg-orange-50 hover:bg-orange-100 text-xs font-mono text-gray-700">1.0</button>
+      </div>
+
+      <button type="button" onclick="proceedToAddressWindow()" class="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-sm transition shadow-lg shadow-orange-600/25">
+        Submit Amount & Show Address
+      </button>
+    </div>
+  </div>
+
+  <!-- DEPOSIT STEP 2: NEW ADDRESS WINDOW / MODAL -->
+  <div id="depositAddressModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-md p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl p-5 sm:p-6 shadow-2xl border border-orange-300 relative max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="backToAmountModal()" class="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-gray-700 hover:text-gray-900" title="Back">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+          <h3 class="text-lg font-bold text-gray-900">Deposit Address</h3>
+        </div>
+        <button type="button" onclick="closeAddressModal()" class="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-gray-500 hover:text-gray-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Summary Banner -->
+      <div class="p-3 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-between text-xs mb-4">
+        <div>
+          <span class="text-gray-500 block">Deposit Amount</span>
+          <span id="addrWindowAmountText" class="text-sm font-bold text-gray-900 font-mono">0.00 USDT</span>
+        </div>
+        <div class="text-right">
+          <span class="text-gray-500 block">Network</span>
+          <span id="depositNetworkBadge" class="text-xs font-semibold text-orange-700">TRON (TRC20)</span>
+        </div>
+      </div>
+
+      <!-- QR Code & Wallet Address -->
+      <div class="p-4 rounded-xl bg-orange-50/70 border border-orange-200 text-center space-y-3 mb-4">
+        <div class="bg-white p-2.5 rounded-xl w-36 h-36 mx-auto flex items-center justify-center shadow-inner">
+          <img id="depositQrImg" src="" alt="Deposit QR" class="w-full h-full object-contain" />
+        </div>
+
+        <div class="text-left">
+          <span class="text-[11px] text-gray-500 block mb-1">Official Deposit Address</span>
+          <div class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-orange-50 border border-orange-200">
+            <code id="depositAddressText" class="text-xs text-gray-800 font-mono break-all select-all">TLYbmXpcNHEcE7az3DHsf1EF77oQd1HeXa</code>
+            <button type="button" onclick="copyDepositAddress()" class="shrink-0 p-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition" title="Copy Address">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" onclick="confirmDeposit()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition shadow-lg shadow-emerald-600/25">
+        I Have Sent Funds (24h Pending)
+      </button>
+    </div>
+  </div>
+
+  <!-- HIDDEN ADMIN PIN MODAL -->
+  <div id="adminPinModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-xs rounded-2xl p-6 border border-orange-200 text-center space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center mx-auto">
+        <i data-lucide="lock" class="w-6 h-6"></i>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-gray-900">Restricted Access</h3>
+        <p class="text-xs text-gray-500 mt-1">Enter Admin PIN to unlock controls</p>
+      </div>
+      <input id="adminPinInput" type="password" maxlength="8" placeholder="••••" onkeydown="if(event.key==='Enter') verifyAdminPin()" class="w-full input-box rounded-xl px-4 py-2.5 text-center text-lg tracking-widest font-mono text-gray-900 outline-none" />
+      <div class="flex gap-2">
+        <button type="button" onclick="closeAdminPinModal()" class="flex-1 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-xs font-semibold text-gray-700">Cancel</button>
+        <button type="button" onclick="verifyAdminPin()" class="flex-1 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-xs font-semibold text-gray-900">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIDDEN ADMIN APPROVAL PANEL DRAWER / MODAL -->
+  <div id="adminPanelModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
+    <div class="glass-card w-full max-w-3xl rounded-2xl p-5 sm:p-6 border border-orange-300 shadow-2xl max-h-[90vh] flex flex-col">
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-orange-200">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-orange-600 flex items-center justify-center text-white">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-gray-900">Admin Approval Desk</h3>
+            <p class="text-xs text-gray-500">Approve or reject pending 24h deposits & withdrawals</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="changeAdminPin()" class="px-3 py-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-xs text-gray-700 border border-orange-200">
+            Change PIN
+          </button>
+          <button type="button" onclick="lockAdminPanel()" class="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-xs font-semibold text-rose-600 border border-rose-500/30 flex items-center gap-1.5">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+            Lock & Hide
+          </button>
+        </div>
+      </div>
+
+      <!-- Pending Requests List -->
+      <div id="adminRequestsContainer" class="flex-1 overflow-y-auto py-4 space-y-3">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- CUSTOMER SUPPORT FLOATING BUTTON (BOTTOM-LEFT CORNER) -->
+  <button type="button" onclick="openSupportModal()" class="fixed bottom-5 left-5 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full glass-pill-btn hover:brightness-105 text-white font-semibold text-xs sm:text-sm active:scale-95 transition">
+    <i data-lucide="headset" class="w-4 h-4 text-white"></i>
+    <span>Customer Support</span>
+  </button>
+
+  <!-- CUSTOMER SUPPORT MODAL -->
+  <div id="supportModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div class="glass-card w-full max-w-md rounded-2xl p-5 sm:p-6 border border-orange-200 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
+            <i data-lucide="headset" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-gray-900">24/7 Customer Support</h3>
+            <p class="text-xs text-gray-500">Need help with Deposit, Swap, or Withdrawal?</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeSupportModal()" class="p-1.5 rounded-lg bg-orange-50 hover:bg-orange-100 text-gray-600">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Your Email or Telegram / WhatsApp</label>
+          <input id="supportContactInput" type="text" placeholder="@username or email@example.com" class="w-full input-box rounded-xl px-3.5 py-2.5 text-sm text-gray-900 outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Issue Category</label>
+          <select id="supportTopicInput" class="w-full input-box rounded-xl px-3.5 py-2.5 text-sm text-gray-900 outline-none">
+            <option value="Deposit Issue">Deposit Pending / Delay</option>
+            <option value="Withdrawal Issue">Withdrawal Status</option>
+            <option value="Swap Issue">Swap / Exchange Rate</option>
+            <option value="Other">Other Inquiry</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Message</label>
+          <textarea id="supportMsgInput" rows="3" placeholder="Describe your issue here..." class="w-full input-box rounded-xl px-3.5 py-2.5 text-sm text-gray-900 outline-none resize-none"></textarea>
+        </div>
+      </div>
+
+      <button type="button" onclick="submitSupportTicket()" class="w-full py-3 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-semibold text-sm transition shadow-lg shadow-orange-600/25">
+        Send Support Message
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl bg-white border border-orange-200 text-sm text-gray-900 shadow-2xl">
+    <span id="toastIcon" class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+    <span id="toastMessage">Notification</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="relative z-10 border-t border-orange-100 py-5 text-center text-xs text-gray-500">
+    NexusSwap Instant Liquidity Protocol &bull; Multi-Chain Asset Routing
+  </footer>
+
+  <script>
+    // ==================== STATE & CONFIG ====================
+    const PRICES_USD = {
+      ETH: 3200,
+      USDT: 1,
+      BTC: 92000,
+      BNB: 620
+    };
+
+    const DEPOSIT_CONFIG = {
+      USDT_TRC20: {
+        coin: 'USDT',
+        label: 'USDT (TRON - TRC20)',
+        network: 'TRON (TRC20)',
+        address: 'TLYbmXpcNHEcE7az3DHsf1EF77oQd1HeXa'
+      },
+      USDT_ERC20: {
+        coin: 'USDT',
+        label: 'USDT (Ethereum - ERC20)',
+        network: 'Ethereum (ERC20)',
+        address: '0x96140f011c9f53fB1A87699ffa46D35b25E4a8d2'
+      },
+      BTC: {
+        coin: 'BTC',
+        label: 'BTC (Bitcoin)',
+        network: 'Bitcoin Network',
+        address: 'bc1qdngnue0ymlzd0tlvkdf6hqhdcpvuvzt7zg0k6z'
+      },
+      ETH: {
+        coin: 'ETH',
+        label: 'ETH (Ethereum - ERC20)',
+        network: 'Ethereum (ERC20)',
+        address: '0x5d2f41885be9687330725a5255f2af74b1d02595'
+      }
+    };
+
+    const STORAGE_KEY = 'nexusswap_state_v3_zero';
+    const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+    let appState = loadState();
+    let selectedDepositKey = 'USDT_TRC20';
+    let selectedWithdrawCoin = 'USDT';
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {}
+      }
+      return {
+        balances: {
+          ETH: 0,
+          USDT: 0,
+          BTC: 0,
+          BNB: 0
+        },
+        transactions: [],
+        adminPin: '1234'
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      renderAll();
+    }
+
+    // Auto-complete deposits after 24 hours have passed
+    function processExpired24hDeposits() {
+      const now = Date.now();
+      let changed = false;
+
+      appState.transactions.forEach(tx => {
+        if (
+          tx.type === 'DEPOSIT' &&
+          tx.status === 'PENDING (24H)' &&
+          tx.unlockAt &&
+          now >= tx.unlockAt
+        ) {
+          tx.status = 'COMPLETED';
+          appState.balances[tx.coin] = Number(((appState.balances[tx.coin] || 0) + Number(tx.amount)).toFixed(8));
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      }
+    }
+
+    function formatRemaining24h(unlockAt) {
+      if (!unlockAt) return '24h 00m left';
+      const diff = Math.max(0, unlockAt - Date.now());
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      return `${hours}h ${mins}m left`;
+    }
+
+    // ==================== RENDER FUNCTIONS ====================
+    function renderAll() {
+      processExpired24hDeposits();
+      renderBalances();
+      renderTransactions();
+      updateSwapBalances();
+      updateWithdrawBalance();
+      renderAdminRequests();
+      lucide.createIcons();
+    }
+
+    function renderBalances() {
+      const container = document.getElementById('assetList');
+      let totalUsd = 0;
+      const coins = ['USDT', 'ETH', 'BTC', 'BNB'];
+
+      container.innerHTML = coins.map(coin => {
+        const bal = Number(appState.balances[coin] || 0);
+        const usdVal = bal * PRICES_USD[coin];
+        totalUsd += usdVal;
+
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl glass-subitem hover:bg-white/75 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-orange-100 border border-orange-200 flex items-center justify-center font-bold text-xs text-orange-700">
+                ${coin}
+              </div>
+              <div>
+                <div class="text-sm font-semibold text-gray-900">${coin}</div>
+                <div class="text-[11px] text-gray-500">$${PRICES_USD[coin].toLocaleString()}</div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-semibold text-gray-900 font-mono">${formatCoin(bal, coin)}</div>
+              <div class="text-[11px] text-gray-500 font-mono">$${usdVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('totalPortfolioUsd').textContent =
+        '$' + totalUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function renderTransactions() {
+      const list = document.getElementById('txHistoryList');
+      document.getElementById('txCountBadge').textContent = appState.transactions.length;
+
+      if (appState.transactions.length === 0) {
+        list.innerHTML = `<div class="text-center text-xs text-gray-500 py-8">No transactions yet.</div>`;
+        return;
+      }
+
+      list.innerHTML = appState.transactions.map(tx => {
+        let badgeColor = 'bg-emerald-500/15 text-emerald-600 border-emerald-500/20';
+        if (tx.status === 'PENDING' || tx.status === 'PENDING (24H)') {
+          badgeColor = 'bg-amber-500/15 text-orange-600 border-amber-500/20';
+        }
+        if (tx.status === 'REJECTED') {
+          badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+        }
+
+        let title = '';
+        let subtitle = tx.time || '';
+        if (tx.type === 'DEPOSIT') {
+          const timerText = tx.status === 'PENDING (24H)' ? ` • ${formatRemaining24h(tx.unlockAt)}` : '';
+          title = `Deposit +${tx.amount} ${tx.coin}`;
+          subtitle = `${tx.network || ''} • ${tx.time}${timerText}`;
+        } else if (tx.type === 'SWAP') {
+          title = `Swap ${tx.fromAmount} ${tx.fromCoin} → ${tx.toAmount} ${tx.toCoin}`;
+        } else if (tx.type === 'TRADE') {
+          title = `${tx.side} ${tx.baseAmount} ${tx.pairCoin} @ $${Number(tx.price).toLocaleString()}`;
+          subtitle = `Total ${tx.quoteAmount} USDT • ${tx.time}`;
+        } else if (tx.type === 'WITHDRAW') {
+          title = `Withdraw -${tx.amount} ${tx.coin}`;
+          subtitle = `${tx.network} • ${tx.time}`;
+        }
+
+        return `
+          <div class="p-3 rounded-xl glass-subitem hover:bg-white/75 transition flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-xs font-semibold text-gray-900 truncate">${title}</div>
+              <div class="text-[11px] text-gray-500 truncate mt-0.5">${subtitle}</div>
+            </div>
+            <span class="shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-md border ${badgeColor}">
+              ${tx.status}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatCoin(val, coin) {
+      if (coin === 'USDT') return Number(val).toFixed(2);
+      return Number(val).toFixed(5).replace(/\.?0+$/, '') || '0';
+    }
+
+    // ==================== MAIN TABS (SWAP / WITHDRAW) ====================
+    function switchMainTab(tab) {
+      const swapSec = document.getElementById('swapSection');
+      const tradeSec = document.getElementById('tradeSection');
+      const withSec = document.getElementById('withdrawSection');
+      const swapBtn = document.getElementById('tabSwapBtn');
+      const tradeBtn = document.getElementById('tabTradeBtn');
+      const withBtn = document.getElementById('tabWithdrawBtn');
+
+      swapSec.classList.add('hidden');
+      tradeSec.classList.add('hidden');
+      withSec.classList.add('hidden');
+
+      swapBtn.className = 'py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-gray-600 hover:text-gray-900';
+      tradeBtn.className = 'py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-gray-600 hover:text-gray-900';
+      withBtn.className = 'py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 text-gray-600 hover:text-gray-900';
+
+      if (tab === 'swap') {
+        swapSec.classList.remove('hidden');
+        swapBtn.className = 'py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-orange-600 text-white shadow';
+      } else if (tab === 'trade') {
+        tradeSec.classList.remove('hidden');
+        tradeBtn.className = 'py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-orange-600 text-white shadow';
+        renderTradePanel();
+      } else {
+        withSec.classList.remove('hidden');
+        withBtn.className = 'py-2.5 px-2 sm:px-4 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-1.5 bg-emerald-600 text-white shadow';
+        updateWithdrawBalance();
+      }
+    }
+
+    // ==================== DEPOSIT MODAL (SUBMIT AMOUNT -> NEW ADDRESS WINDOW) ====================
+    let pendingDepositAmount = 0;
+
+    function openDepositModal() {
+      closeAddressModal();
+      const modal = document.getElementById('depositModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.getElementById('depositAmountInput').value = '';
+      pendingDepositAmount = 0;
+      selectDepositOption(selectedDepositKey);
+    }
+
+    function closeDepositModal() {
+      const modal = document.getElementById('depositModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openAddressModal() {
+      const modal = document.getElementById('depositAddressModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeAddressModal() {
+      const modal = document.getElementById('depositAddressModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function backToAmountModal() {
+      closeAddressModal();
+      const modal = document.getElementById('depositModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function selectDepositOption(key) {
+      selectedDepositKey = key;
+      const cfg = DEPOSIT_CONFIG[key];
+
+      document.querySelectorAll('.dep-opt-btn').forEach(btn => {
+        if (btn.dataset.dep === key) {
+          btn.className = 'dep-opt-btn p-2.5 rounded-xl border border-orange-500 bg-orange-100 text-left transition';
+        } else {
+          btn.className = 'dep-opt-btn p-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-left transition hover:border-orange-300';
+        }
+      });
+
+      document.getElementById('depositCoinTag').textContent = cfg.coin;
+      document.getElementById('depositNetworkBadge').textContent = cfg.network;
+      document.getElementById('depositAddressText').textContent = cfg.address;
+      document.getElementById('depositQrImg').src =
+        `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(cfg.address)}`;
+    }
+
+    function setQuickDeposit(amt) {
+      document.getElementById('depositAmountInput').value = amt;
+    }
+
+    function proceedToAddressWindow() {
+      const amt = parseFloat(document.getElementById('depositAmountInput').value);
+      if (!amt || amt <= 0) {
+        showToast('Please enter a valid deposit amount first.', 'rose');
+        return;
+      }
+
+      pendingDepositAmount = amt;
+      const cfg = DEPOSIT_CONFIG[selectedDepositKey];
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cfg.address)}`;
+
+      const newWin = window.open('', '_blank', 'width=460,height=640,resizable=yes,scrollbars=yes');
+      if (newWin) {
+        newWin.document.open();
+        newWin.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deposit Address — ${amt} ${cfg.coin}</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: #fffaf5;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: #ffffff;
+      border: 1px solid #fed7aa;
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 20px 45px rgba(234,88,12,0.15);
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #111827;
+    }
+    .pill {
+      font-size: 11px;
+      font-weight: 600;
+      color: #c2410c;
+      background: #ffedd5;
+      border: 1px solid #fdba74;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .summary {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .label {
+      font-size: 11px;
+      color: #6b7280;
+      display: block;
+    }
+    .val {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: #111827;
+    }
+    .qr-box {
+      background: #fff;
+      border: 1px solid #fed7aa;
+      width: 164px;
+      height: 164px;
+      margin: 0 auto 16px;
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .qr-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .addr-box {
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    code {
+      font-size: 12px;
+      color: #1f2937;
+      word-break: break-all;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    button.copy-btn {
+      background: #ea580c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    button.copy-btn:hover { background: #f97316; }
+    button.confirm-btn {
+      width: 100%;
+      background: #059669;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.confirm-btn:hover { background: #10b981; }
+
+    /* Crypto Floating Background Animation */
+    .crypto-bg-layer {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .crypto-orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(70px);
+      opacity: 0.35;
+      animation: orbDrift 18s ease-in-out infinite alternate;
+    }
+    @keyframes orbDrift {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, -25px) scale(1.08); }
+      100% { transform: translate(-25px, 30px) scale(0.95); }
+    }
+    .crypto-coin-float {
+      position: absolute;
+      bottom: -140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.96), rgba(255, 247, 237, 0.72) 55%, rgba(251, 146, 60, 0.32) 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.88);
+      box-shadow:
+        0 18px 36px -10px rgba(234, 88, 12, 0.18),
+        inset 0 0 0 2px rgba(249, 115, 22, 0.18),
+        inset 0 2px 4px rgba(255, 255, 255, 0.95);
+      color: #c2410c;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      user-select: none;
+      backdrop-filter: blur(4px);
+      animation: floatUpCrypto linear infinite;
+    }
+    .crypto-coin-symbol {
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .crypto-coin-ticker {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(154, 52, 18, 0.72);
+      margin-top: 2px;
+    }
+    @keyframes floatUpCrypto {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(0.9);
+        opacity: 0;
+      }
+      12% {
+        opacity: 0.82;
+      }
+      85% {
+        opacity: 0.75;
+      }
+      100% {
+        transform: translateY(-115vh) rotate(360deg) scale(1.05);
+        opacity: 0;
+      }
+    }
+
+    select {
+      color-scheme: light;
+      background-color: rgba(255, 250, 245, 0.92);
+      color: #111827;
+      border: 1px solid #fdba74;
+    }
+    select option {
+      background-color: #fffaf5;
+      color: #111827;
+      padding: 10px;
+    }
+    select option:checked {
+      background-color: #ffedd5;
+      color: #c2410c;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h2>Deposit Address</h2>
+      <span class="pill">${cfg.network}</span>
+    </div>
+    <div class="summary">
+      <div>
+        <span class="label">Deposit Amount</span>
+        <span class="val">${amt} ${cfg.coin}</span>
+      </div>
+      <div style="text-align:right;">
+        <span class="label">Status</span>
+        <span style="font-size:12px;font-weight:600;color:#fbbf24;">24h Pending</span>
+      </div>
+    </div>
+    <div class="qr-box">
+      <img src="${qrUrl}" alt="QR Code" />
+    </div>
+    <span class="label" style="margin-bottom:6px;">Official Deposit Address</span>
+    <div class="addr-box">
+      <code id="addrVal">${cfg.address}</code>
+      <button class="copy-btn" onclick="copyAddr()">Copy</button>
+    </div>
+    <button class="confirm-btn" onclick="submitFromNewWindow()">I Have Sent Funds (24h Pending)</button>
+  </div>
+  <script>
+    function copyAddr() {
+      const txt = document.getElementById('addrVal').textContent;
+      navigator.clipboard.writeText(txt);
+      alert('Address copied!');
+    }
+    function submitFromNewWindow() {
+      if (window.opener && !window.opener.closed && typeof window.opener.confirmDeposit === 'function') {
+        window.opener.confirmDeposit(${amt});
+        window.close();
+      } else {
+        alert('Please complete confirmation on the main tab.');
+      }
+    }
+  <\/script>
+</body>
+</html>`);
+        newWin.document.close();
+        closeDepositModal();
+      } else {
+        // Fallback if popups are blocked by browser
+        document.getElementById('addrWindowAmountText').textContent = `${amt} ${cfg.coin}`;
+        document.getElementById('depositNetworkBadge').textContent = cfg.network;
+        document.getElementById('depositAddressText').textContent = cfg.address;
+        document.getElementById('depositQrImg').src = qrUrl;
+        closeDepositModal();
+        openAddressModal();
+      }
+    }
+
+    function copyDepositAddress() {
+      const addr = DEPOSIT_CONFIG[selectedDepositKey].address;
+      navigator.clipboard.writeText(addr);
+      showToast('Deposit address copied to clipboard!', 'emerald');
+    }
+
+    function confirmDeposit(overrideAmt) {
+      const amt = overrideAmt || pendingDepositAmount || parseFloat(document.getElementById('depositAmountInput').value);
+      if (!amt || amt <= 0) {
+        showToast('Please enter a valid deposit amount first.', 'rose');
+        return;
+      }
+
+      const cfg = DEPOSIT_CONFIG[selectedDepositKey];
+      const now = Date.now();
+
+      appState.transactions.unshift({
+        id: 'DEP-' + Math.floor(100000 + Math.random() * 900000),
+        type: 'DEPOSIT',
+        coin: cfg.coin,
+        network: cfg.network,
+        address: cfg.address,
+        amount: amt,
+        status: 'PENDING (24H)',
+        createdAt: now,
+        unlockAt: now + TWENTY_FOUR_HOURS_MS,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      pendingDepositAmount = 0;
+      document.getElementById('depositAmountInput').value = '';
+      saveState();
+      closeAddressModal();
+      showToast(`Deposit of ${amt} ${cfg.coin} placed in 24h pending status.`, 'amber');
+    }
+
+    // ==================== SWAP LOGIC ====================
+    function onSwapCoinChange() {
+      const fromCoin = document.getElementById('swapFromCoin').value;
+      const toSelect = document.getElementById('swapToCoin');
+      if (fromCoin === toSelect.value) {
+        const alternatives = ['USDT', 'ETH', 'BTC', 'BNB'].filter(c => c !== fromCoin);
+        toSelect.value = alternatives[0];
+      }
+      updateSwapBalances();
+      calculateSwapOutput();
+    }
+
+    function getSwapRate(fromCoin, toCoin) {
+      if (fromCoin === toCoin) return 1;
+      // 10 USDT -> 20 received (2x multiplier when swapping from USDT)
+      if (fromCoin === 'USDT') return 2;
+      if (toCoin === 'USDT') return 0.5;
+      return PRICES_USD[fromCoin] / PRICES_USD[toCoin];
+    }
+
+    function updateSwapBalances() {
+      const fromCoin = document.getElementById('swapFromCoin').value;
+      const toCoin = document.getElementById('swapToCoin').value;
+      document.getElementById('swapFromBalance').textContent =
+        `${formatCoin(appState.balances[fromCoin] || 0, fromCoin)} ${fromCoin}`;
+      document.getElementById('swapToBalance').textContent =
+        `${formatCoin(appState.balances[toCoin] || 0, toCoin)} ${toCoin}`;
+
+      const rate = getSwapRate(fromCoin, toCoin);
+      document.getElementById('swapRateDisplay').textContent =
+        `1 ${fromCoin} = ${rate >= 1 ? rate.toLocaleString(undefined, { maximumFractionDigits: 4 }) : rate.toFixed(6)} ${toCoin}`;
+    }
+
+    function setMaxSwap() {
+      const fromCoin = document.getElementById('swapFromCoin').value;
+      document.getElementById('swapFromAmount').value = appState.balances[fromCoin] || 0;
+      calculateSwapOutput();
+    }
+
+    function reverseSwapCoins() {
+      const fromEl = document.getElementById('swapFromCoin');
+      const toEl = document.getElementById('swapToCoin');
+      const temp = fromEl.value;
+      fromEl.value = toEl.value;
+      toEl.value = temp;
+      updateSwapBalances();
+      calculateSwapOutput();
+    }
+
+    function calculateSwapOutput() {
+      const fromCoin = document.getElementById('swapFromCoin').value;
+      const toCoin = document.getElementById('swapToCoin').value;
+      const fromAmt = parseFloat(document.getElementById('swapFromAmount').value) || 0;
+
+      if (fromCoin === toCoin) {
+        document.getElementById('swapToAmount').value = fromAmt > 0 ? fromAmt : '';
+        return;
+      }
+
+      const rate = getSwapRate(fromCoin, toCoin);
+      const toAmt = fromAmt * rate;
+      const fromUsd = fromAmt * PRICES_USD[fromCoin];
+      const toUsd = toAmt * PRICES_USD[toCoin];
+
+      document.getElementById('swapToAmount').value =
+        fromAmt > 0 ? (Number.isInteger(toAmt) ? toAmt.toFixed(2) : toAmt.toFixed(4).replace(/\.?0+$/, '')) : '';
+      document.getElementById('swapFromUsdHint').textContent = `≈ $${fromUsd.toFixed(2)}`;
+      document.getElementById('swapToUsdHint').textContent = `≈ $${toUsd.toFixed(2)}`;
+    }
+
+    function executeSwap() {
+      const fromCoin = document.getElementById('swapFromCoin').value;
+      const toCoin = document.getElementById('swapToCoin').value;
+      const fromAmt = parseFloat(document.getElementById('swapFromAmount').value);
+
+      if (fromCoin === toCoin) {
+        showToast('Select two different coins to swap.', 'rose');
+        return;
+      }
+      if (!fromAmt || fromAmt <= 0) {
+        showToast('Enter a valid amount to swap.', 'rose');
+        return;
+      }
+      if ((appState.balances[fromCoin] || 0) < fromAmt) {
+        showToast(`Insufficient ${fromCoin} balance.`, 'rose');
+        return;
+      }
+
+      const toAmt = Number((fromAmt * getSwapRate(fromCoin, toCoin)).toFixed(6));
+
+      appState.balances[fromCoin] = Number((appState.balances[fromCoin] - fromAmt).toFixed(8));
+      appState.balances[toCoin] = Number(((appState.balances[toCoin] || 0) + toAmt).toFixed(8));
+
+      appState.transactions.unshift({
+        id: 'SWP-' + Math.floor(100000 + Math.random() * 900000),
+        type: 'SWAP',
+        fromCoin,
+        toCoin,
+        fromAmount: formatCoin(fromAmt, fromCoin),
+        toAmount: formatCoin(toAmt, toCoin),
+        status: 'COMPLETED',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      document.getElementById('swapFromAmount').value = '';
+      document.getElementById('swapToAmount').value = '';
+      saveState();
+      showToast(`Swapped ${fromAmt} ${fromCoin} to ${formatCoin(toAmt, toCoin)} ${toCoin}`, 'emerald');
+    }
+
+    // ==================== WITHDRAWAL LOGIC ====================
+    function selectWithdrawCoin(coin) {
+      selectedWithdrawCoin = coin;
+      document.querySelectorAll('.w-coin-btn').forEach(btn => {
+        if (btn.dataset.wcoin === coin) {
+          btn.className = 'w-coin-btn py-2.5 rounded-xl border border-orange-500 bg-orange-100 text-gray-900 font-semibold text-xs transition';
+        } else {
+          btn.className = 'w-coin-btn py-2.5 rounded-xl border border-orange-200 bg-orange-50/70 text-gray-500 hover:text-gray-900 font-semibold text-xs transition';
+        }
+      });
+
+      const netSelect = document.getElementById('withdrawNetwork');
+      if (coin === 'USDT') netSelect.value = 'TRON (TRC20)';
+      else if (coin === 'ETH') netSelect.value = 'Ethereum (ERC20)';
+      else if (coin === 'BTC') netSelect.value = 'Bitcoin Network';
+      else if (coin === 'BNB') netSelect.value = 'BNB Smart Chain (BEP20)';
+
+      updateWithdrawBalance();
+    }
+
+    function updateWithdrawBalance() {
+      const el = document.getElementById('withdrawAvailBalance');
+      if (!el) return;
+      const bal = appState.balances[selectedWithdrawCoin] || 0;
+      el.textContent = `${formatCoin(bal, selectedWithdrawCoin)} ${selectedWithdrawCoin}`;
+    }
+
+    function setMaxWithdraw() {
+      document.getElementById('withdrawAmount').value = appState.balances[selectedWithdrawCoin] || 0;
+    }
+
+    function submitWithdrawal() {
+      const coin = selectedWithdrawCoin;
+      const network = document.getElementById('withdrawNetwork').value;
+      const address = document.getElementById('withdrawAddress').value.trim();
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+      if (!address || address.length < 10) {
+        showToast('Please enter a valid recipient wallet address.', 'rose');
+        return;
+      }
+      if (!amount || amount <= 0) {
+        showToast('Please enter a valid withdrawal amount.', 'rose');
+        return;
+      }
+      if ((appState.balances[coin] || 0) < amount) {
+        showToast(`Insufficient ${coin} balance.`, 'rose');
+        return;
+      }
+
+      appState.balances[coin] = Number((appState.balances[coin] - amount).toFixed(8));
+
+      appState.transactions.unshift({
+        id: 'WDR-' + Math.floor(100000 + Math.random() * 900000),
+        type: 'WITHDRAW',
+        coin,
+        network,
+        address,
+        amount,
+        status: 'PENDING',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      document.getElementById('withdrawAddress').value = '';
+      document.getElementById('withdrawAmount').value = '';
+      saveState();
+      showToast('Withdrawal submitted! Awaiting manual admin approval.', 'amber');
+    }
+
+    // ==================== SECRET ADMIN ACCESS & APPROVAL ====================
+    let logoClicks = 0;
+    let logoTimer = null;
+
+    document.getElementById('brandLogo').addEventListener('click', () => {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(() => { logoClicks = 0; }, 2500);
+      if (logoClicks >= 5) {
+        logoClicks = 0;
+        openAdminPinModal();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        openAdminPinModal();
+      }
+    });
+
+    if (window.location.hash === '#admin') {
+      setTimeout(openAdminPinModal, 300);
+    }
+
+    function openAdminPinModal() {
+      const modal = document.getElementById('adminPinModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      const input = document.getElementById('adminPinInput');
+      input.value = '';
+      input.focus();
+    }
+
+    function closeAdminPinModal() {
+      const modal = document.getElementById('adminPinModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function verifyAdminPin() {
+      const entered = document.getElementById('adminPinInput').value;
+      if (entered === appState.adminPin) {
+        closeAdminPinModal();
+        const panel = document.getElementById('adminPanelModal');
+        panel.classList.remove('hidden');
+        panel.classList.add('flex');
+        renderAdminRequests();
+      } else {
+        showToast('Incorrect Admin PIN.', 'rose');
+      }
+    }
+
+    function lockAdminPanel() {
+      const panel = document.getElementById('adminPanelModal');
+      panel.classList.add('hidden');
+      panel.classList.remove('flex');
+      if (window.location.hash === '#admin') {
+        history.replaceState(null, '', ' ');
+      }
+      showToast('Admin panel locked and hidden.', 'blue');
+    }
+
+    function changeAdminPin() {
+      const newPin = prompt('Enter new Admin PIN (4-8 digits):');
+      if (newPin && newPin.trim().length >= 4) {
+        appState.adminPin = newPin.trim();
+        saveState();
+        showToast('Admin PIN updated successfully.', 'emerald');
+      }
+    }
+
+    function renderAdminRequests() {
+      const container = document.getElementById('adminRequestsContainer');
+      const requests = appState.transactions.filter(tx => tx.type === 'WITHDRAW' || tx.type === 'DEPOSIT');
+
+      if (requests.length === 0) {
+        container.innerHTML = `<div class="text-center text-sm text-gray-500 py-10">No deposit or withdrawal requests found.</div>`;
+        return;
+      }
+
+      container.innerHTML = requests.map(tx => {
+        const isDepositPending = tx.type === 'DEPOSIT' && tx.status === 'PENDING (24H)';
+        const isWithdrawPending = tx.type === 'WITHDRAW' && tx.status === 'PENDING';
+        const isPending = isDepositPending || isWithdrawPending;
+
+        return `
+          <div class="p-4 rounded-xl bg-orange-50/70 border border-orange-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="space-y-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-xs font-mono text-gray-500">${tx.id}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${tx.type === 'DEPOSIT' ? 'bg-orange-100 text-orange-700' : 'bg-emerald-500/20 text-emerald-300'}">${tx.type}</span>
+                <span class="text-xs font-bold text-gray-900">${tx.amount} ${tx.coin}</span>
+                <span class="text-[11px] px-2 py-0.5 rounded bg-orange-50 text-gray-700">${tx.network || ''}</span>
+              </div>
+              ${tx.address ? `<div class="text-xs text-gray-500 font-mono break-all">Address: ${tx.address}</div>` : ''}
+              <div class="text-[11px] text-gray-500">
+                Requested at ${tx.time}${isDepositPending ? ` • Auto-complete in ${formatRemaining24h(tx.unlockAt)}` : ''}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              ${isPending ? `
+                <button onclick="approveRequest('${tx.id}')" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                  Approve
+                </button>
+                <button onclick="rejectRequest('${tx.id}')" class="px-3.5 py-2 rounded-lg bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-gray-900 border border-rose-500/30 text-xs font-semibold transition">
+                  Reject
+                </button>
+              ` : `
+                <span class="px-3 py-1 rounded-lg text-xs font-semibold ${tx.status === 'COMPLETED' ? 'bg-emerald-500/15 text-emerald-600' : 'bg-rose-500/15 text-rose-400'}">
+                  ${tx.status}
+                </span>
+              `}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function approveRequest(id) {
+      const tx = appState.transactions.find(t => t.id === id);
+      if (!tx) return;
+
+      if (tx.type === 'DEPOSIT' && tx.status === 'PENDING (24H)') {
+        tx.status = 'COMPLETED';
+        appState.balances[tx.coin] = Number(((appState.balances[tx.coin] || 0) + Number(tx.amount)).toFixed(8));
+        saveState();
+        showToast(`Deposit ${id} approved & credited!`, 'emerald');
+      } else if (tx.type === 'WITHDRAW' && tx.status === 'PENDING') {
+        tx.status = 'COMPLETED';
+        saveState();
+        showToast(`Withdrawal ${id} approved!`, 'emerald');
+      }
+    }
+
+    function rejectRequest(id) {
+      const tx = appState.transactions.find(t => t.id === id);
+      if (!tx) return;
+
+      if (tx.type === 'DEPOSIT' && tx.status === 'PENDING (24H)') {
+        tx.status = 'REJECTED';
+        saveState();
+        showToast(`Deposit ${id} rejected.`, 'amber');
+      } else if (tx.type === 'WITHDRAW' && tx.status === 'PENDING') {
+        tx.status = 'REJECTED';
+        appState.balances[tx.coin] = Number(((appState.balances[tx.coin] || 0) + Number(tx.amount)).toFixed(8));
+        saveState();
+        showToast(`Withdrawal ${id} rejected & balance refunded.`, 'amber');
+      }
+    }
+
+
+    // ==================== CUSTOMER SUPPORT ====================
+    function openSupportModal() {
+      const modal = document.getElementById('supportModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeSupportModal() {
+      const modal = document.getElementById('supportModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function submitSupportTicket() {
+      const contact = document.getElementById('supportContactInput').value.trim();
+      const topic = document.getElementById('supportTopicInput').value;
+      const msg = document.getElementById('supportMsgInput').value.trim();
+
+      if (!contact || !msg) {
+        showToast('Please enter your contact details and message.', 'rose');
+        return;
+      }
+
+      document.getElementById('supportContactInput').value = '';
+      document.getElementById('supportMsgInput').value = '';
+      closeSupportModal();
+      showToast(`Support request (${topic}) submitted! Our team will contact you shortly.`, 'emerald');
+    }
+
+    // ==================== TRADING LOGIC ====================
+    let activeTradePair = 'BTC';
+    let activeTradeSide = 'BUY';
+    let activeTradeTf = '1D';
+
+    const TRADE_SERIES = {
+      BTC: {
+        '1H': [91450, 91620, 91510, 91890, 92140, 91980, 92250, 92000],
+        '1D': [89400, 90150, 89820, 90900, 91300, 90850, 91750, 92000],
+        '1W': [86200, 87500, 88100, 87400, 89600, 90800, 91400, 92000],
+        '1M': [81500, 83400, 85200, 84600, 87900, 89500, 91100, 92000]
+      },
+      ETH: {
+        '1H': [3165, 3180, 3172, 3195, 3210, 3190, 3208, 3200],
+        '1D': [3090, 3120, 3105, 3150, 3175, 3160, 3192, 3200],
+        '1W': [2960, 3010, 3045, 3020, 3095, 3140, 3180, 3200],
+        '1M': [2750, 2840, 2910, 2890, 2995, 3080, 3155, 3200]
+      },
+      BNB: {
+        '1H': [612, 615, 613, 618, 621, 619, 622, 620],
+        '1D': [598, 604, 601, 609, 614, 611, 617, 620],
+        '1W': [575, 584, 590, 587, 599, 608, 615, 620],
+        '1M': [535, 550, 566, 560, 582, 596, 610, 620]
+      }
+    };
+
+    function onTradePairChange() {
+      activeTradePair = document.getElementById('tradePairSelect').value;
+      renderTradePanel();
+    }
+
+    function setTradeTimeframe(tf) {
+      activeTradeTf = tf;
+      document.querySelectorAll('.trade-tf-btn').forEach(btn => {
+        if (btn.dataset.tf === tf) {
+          btn.className = 'trade-tf-btn px-2 py-1 rounded text-[11px] font-mono font-semibold bg-orange-600 text-white';
+        } else {
+          btn.className = 'trade-tf-btn px-2 py-1 rounded text-[11px] font-mono font-semibold text-gray-600 hover:text-gray-900';
+        }
+      });
+      renderTradeChart();
+    }
+
+    function setTradeSide(side) {
+      activeTradeSide = side;
+      const buyBtn = document.getElementById('tradeBuyModeBtn');
+      const sellBtn = document.getElementById('tradeSellModeBtn');
+      const submitBtn = document.getElementById('tradeSubmitBtn');
+
+      if (side === 'BUY') {
+        buyBtn.className = 'py-2 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow transition';
+        sellBtn.className = 'py-2 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition';
+        submitBtn.className = 'w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-sm transition shadow-lg shadow-emerald-600/25';
+        submitBtn.textContent = `Place Buy ${activeTradePair} Order`;
+      } else {
+        sellBtn.className = 'py-2 rounded-lg text-xs font-bold bg-rose-600 text-white shadow transition';
+        buyBtn.className = 'py-2 rounded-lg text-xs font-bold text-gray-600 hover:text-gray-900 transition';
+        submitBtn.className = 'w-full py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 active:scale-[0.99] text-white font-semibold text-sm transition shadow-lg shadow-rose-600/25';
+        submitBtn.textContent = `Place Sell ${activeTradePair} Order`;
+      }
+
+      document.getElementById('tradeAmountInput').value = '';
+      renderTradePanel();
+    }
+
+    function renderTradePanel() {
+      const price = PRICES_USD[activeTradePair] || 1;
+      document.querySelectorAll('.trade-base-label').forEach(el => {
+        el.textContent = activeTradePair;
+      });
+      document.getElementById('tradeLivePrice').textContent =
+        '$' + price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      const isBuy = activeTradeSide === 'BUY';
+      document.getElementById('tradeInputLabel').textContent =
+        isBuy ? 'Spend Amount (USDT)' : `Sell Amount (${activeTradePair})`;
+      document.getElementById('tradeInputUnit').textContent =
+        isBuy ? 'USDT' : activeTradePair;
+
+      const availCoin = isBuy ? 'USDT' : activeTradePair;
+      const availBal = appState.balances[availCoin] || 0;
+      document.getElementById('tradeAvailBalance').textContent =
+        `${formatCoin(availBal, availCoin)} ${availCoin}`;
+
+      renderTradeChart();
+      updateTradeEstimate();
+    }
+
+    function renderTradeChart() {
+      const series = (TRADE_SERIES[activeTradePair] && TRADE_SERIES[activeTradePair][activeTradeTf]) || [1, 2, 3];
+      const minVal = Math.min(...series);
+      const maxVal = Math.max(...series);
+      const span = Math.max(maxVal - minVal, 1e-6);
+
+      const width = 500;
+      const height = 150;
+      const padY = 14;
+
+      const coords = series.map((val, idx) => {
+        const x = (idx / Math.max(series.length - 1, 1)) * width;
+        const norm = (val - minVal) / span;
+        const y = height - padY - norm * (height - padY * 2);
+        return [Number(x.toFixed(1)), Number(y.toFixed(1))];
+      });
+
+      const lineD = coords.map((pt, i) => `${i === 0 ? 'M' : 'L'} ${pt[0]} ${pt[1]}`).join(' ');
+      const areaD = `${lineD} L ${width} ${height} L 0 ${height} Z`;
+
+      document.getElementById('tradeLinePath').setAttribute('d', lineD);
+      document.getElementById('tradeAreaPath').setAttribute('d', areaD);
+      document.getElementById('tradeChartTitle').textContent = `${activeTradePair}/USDT (${activeTradeTf})`;
+      document.getElementById('tradeHighLow').textContent =
+        `H: $${maxVal.toLocaleString()} • L: $${minVal.toLocaleString()}`;
+    }
+
+    function setMaxTrade() {
+      const availCoin = activeTradeSide === 'BUY' ? 'USDT' : activeTradePair;
+      document.getElementById('tradeAmountInput').value = appState.balances[availCoin] || 0;
+      updateTradeEstimate();
+    }
+
+    function updateTradeEstimate() {
+      const amt = parseFloat(document.getElementById('tradeAmountInput').value) || 0;
+      const price = PRICES_USD[activeTradePair] || 1;
+      const estLabel = document.getElementById('tradeEstLabel');
+      const estOut = document.getElementById('tradeEstOutput');
+
+      if (activeTradeSide === 'BUY') {
+        const baseQty = amt / price;
+        estLabel.textContent = `Estimated ${activeTradePair}:`;
+        estOut.textContent = `${amt > 0 ? baseQty.toFixed(6).replace(/\.?0+$/, '') : '0'} ${activeTradePair}`;
+      } else {
+        const usdtQty = amt * price;
+        estLabel.textContent = 'Estimated USDT:';
+        estOut.textContent = `${amt > 0 ? usdtQty.toFixed(2) : '0.00'} USDT`;
+      }
+    }
+
+    function executeTradeOrder() {
+      const amt = parseFloat(document.getElementById('tradeAmountInput').value);
+      const price = PRICES_USD[activeTradePair] || 1;
+
+      if (!amt || amt <= 0) {
+        showToast('Please enter a valid trade amount.', 'rose');
+        return;
+      }
+
+      if (activeTradeSide === 'BUY') {
+        if ((appState.balances.USDT || 0) < amt) {
+          showToast('Insufficient USDT balance to buy.', 'rose');
+          return;
+        }
+        const boughtBase = Number((amt / price).toFixed(8));
+        appState.balances.USDT = Number((appState.balances.USDT - amt).toFixed(8));
+        appState.balances[activeTradePair] = Number(((appState.balances[activeTradePair] || 0) + boughtBase).toFixed(8));
+
+        appState.transactions.unshift({
+          id: 'TRD-' + Math.floor(100000 + Math.random() * 900000),
+          type: 'TRADE',
+          side: 'BUY',
+          pairCoin: activeTradePair,
+          price,
+          baseAmount: formatCoin(boughtBase, activeTradePair),
+          quoteAmount: amt.toFixed(2),
+          status: 'COMPLETED',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        document.getElementById('tradeAmountInput').value = '';
+        saveState();
+        renderTradePanel();
+        showToast(`Bought ${formatCoin(boughtBase, activeTradePair)} ${activeTradePair} for ${amt.toFixed(2)} USDT!`, 'emerald');
+      } else {
+        if ((appState.balances[activeTradePair] || 0) < amt) {
+          showToast(`Insufficient ${activeTradePair} balance to sell.`, 'rose');
+          return;
+        }
+        const receivedUsdt = Number((amt * price).toFixed(8));
+        appState.balances[activeTradePair] = Number((appState.balances[activeTradePair] - amt).toFixed(8));
+        appState.balances.USDT = Number(((appState.balances.USDT || 0) + receivedUsdt).toFixed(8));
+
+        appState.transactions.unshift({
+          id: 'TRD-' + Math.floor(100000 + Math.random() * 900000),
+          type: 'TRADE',
+          side: 'SELL',
+          pairCoin: activeTradePair,
+          price,
+          baseAmount: formatCoin(amt, activeTradePair),
+          quoteAmount: receivedUsdt.toFixed(2),
+          status: 'COMPLETED',
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        document.getElementById('tradeAmountInput').value = '';
+        saveState();
+        renderTradePanel();
+        showToast(`Sold ${amt} ${activeTradePair} for ${receivedUsdt.toFixed(2)} USDT!`, 'emerald');
+      }
+    }
+
+    // ==================== TOAST ====================
+    let toastTimeout;
+    function showToast(msg, color = 'blue') {
+      const box = document.getElementById('toastBox');
+      const icon = document.getElementById('toastIcon');
+      const text = document.getElementById('toastMessage');
+
+      const colors = {
+        blue: 'bg-orange-500',
+        emerald: 'bg-emerald-400',
+        rose: 'bg-rose-400',
+        amber: 'bg-amber-400'
+      };
+      icon.className = `w-2.5 h-2.5 rounded-full ${colors[color] || colors.blue}`;
+      text.textContent = msg;
+
+      box.classList.remove('hidden');
+      box.classList.add('flex');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        box.classList.add('hidden');
+        box.classList.remove('flex');
+      }, 3200);
+    }
+
+    renderAll();
+    calculateSwapOutput();
+    setInterval(renderAll, 30000);
+  </script>
+</body>
+</html>
